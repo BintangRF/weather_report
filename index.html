@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather Report</title>
+    <link rel="icon" type="image/x-icon" href="images/icon.webp" />
+
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="card">
+      <div class="search">
+        <input type="text" name="text" id="text" placeholder="Search city" />
+        <button><img src="images/search.png" alt="" /></button>
+      </div>
+
+      <div class="error">
+        <p>Invalid City Name</p>
+      </div>
+
+      <div class="weather">
+        <img src="" class="weather-icon" alt="" />
+
+        <h1 class="temp"></h1>
+        <h2 class="city"></h2>
+
+        <div class="details">
+          <div class="col">
+            <img src="images/humidity.png" alt="" />
+            <div>
+              <p class="humidity"></p>
+              <p>Humidity</p>
+            </div>
+          </div>
+          <div class="col">
+            <img src="images/wind.png" alt="" />
+            <div>
+              <p class="wind"></p>
+              <p>Wind Speed</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const apiKey = "a914efca4b7bcd91d944c4b435f25b22";
+      const apiUrl =
+        "https://api.openweathermap.org/data/2.5/weather?&units=metric&q=";
+
+      const searchBox = document.querySelector(".search input");
+      const searchBtn = document.querySelector(".search button");
+      const weatherIcon = document.querySelector(".weather-icon");
+
+      async function checkWeather(city) {
+        const response = await fetch(apiUrl + city + `&appid=${apiKey}`);
+
+        if (response.status == 404) {
+          document.querySelector(".error").style.display = "block";
+          document.querySelector(".weather").style.display = "none";
+        } else {
+          document.querySelector(".error").style.display = "none";
+        }
+
+        var data = await response.json();
+
+        document.querySelector(".city").innerHTML = data.name;
+        document.querySelector(".temp").innerHTML =
+          Math.round(data.main.temp) + "°C";
+        document.querySelector(".humidity").innerHTML =
+          data.main.humidity + "%";
+        document.querySelector(".wind").innerHTML = data.wind.speed + "km/h";
+
+        if (data.weather[0].main == "Clouds") {
+          weatherIcon.src = "images/clouds.png";
+          document.querySelector(".card").style.background =
+            " linear-gradient(135deg, #FF75BC, #59C0E4)";
+        } else if (data.weather[0].main == "Rain") {
+          weatherIcon.src = "images/rain.png";
+          document.querySelector(".card").style.background =
+            " linear-gradient(135deg, #8C7EFD, #55C1E6)";
+        } else if (data.weather[0].main == "Drizzle") {
+          weatherIcon.src = "images/drizzle.png";
+          document.querySelector(".card").style.background =
+            " linear-gradient(135deg, #E17AFE, #5ABFE4)";
+        } else if (data.weather[0].main == "Clear") {
+          weatherIcon.src = "images/clear.png";
+          document.querySelector(".card").style.background =
+            " linear-gradient(135deg, #45EEC5, #54C2E5)";
+        } else if (data.weather[0].main == "Mist") {
+          weatherIcon.src = "images/mist.png";
+          document.querySelector(".card").style.background =
+            " linear-gradient(135deg, #FF777C, #57C1E4)";
+        } else if (data.weather[0].main == "Snow") {
+          weatherIcon.src = "images/snow.png";
+          document.querySelector(".card").style.background =
+            " linear-gradient(135deg, #BAE2F9, #56C2E4)";
+        }
+
+        document.querySelector(".weather").style.display = "block";
+      }
+
+      searchBtn.addEventListener("click", () => {
+        checkWeather(searchBox.value);
+      });
+
+      searchBox.addEventListener("keypress", (event) => {
+        if (event.keyCode == 13) {
+          checkWeather(searchBox.value);
+        }
+      });
+    </script>
+  </body>
+</html>
